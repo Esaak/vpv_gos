@@ -13,11 +13,14 @@ def breaking_atmosphere(planet, dh, atmosphere_height, q, m, w0, w):
     n = []
     coef0 = planet.Po / (constants.k * planet.T)
     coef = constants.m * planet.g / (constants.k * planet.T)
-    K = 4 * np.pi * q**2 / (3 * m) * 1/(w0**2 - w**2) * coef0
+    coef1 = 4 * np.pi * q**2 / (3 * m) * 1/(w0**2 - w**2) * coef0
     for i in range(int(atmosphere_height / dh) + 1):
-        n.append(np.sqrt(2 * K * np.exp( -coef * (dh * i))))
-    # print(f"Показатель преломления при h = 0 м, при h = {atmosphere_height} м")
-    # print(n[0], n[-1])
+        K = coef1 * np.exp( -coef * (dh * i))
+        n.append(np.sqrt((2 * K + 1)/(1 - K)))
+        if i%100 ==0:
+            print(n[i])
+    #print(f"Показатель преломления при h = 0 м, при h = {atmosphere_height} м")
+    #print(n[0], n[-1])
     return Planet.Atmosphere(atmosphere_height, n, dh, w)
 
 
@@ -187,11 +190,11 @@ def movement(planet, atmosphere, particles, N, dt):
 
     #print_at(constants.particle_numbers + 1, 0, '')
     for i in range(N):
-        for line_x, line_y, particle in zip(particles, lines_x, lines_y):
+        for particle, line_x, line_y in zip(particles, lines_x, lines_y):
             one_step(particle, planet, atmosphere, dt)
             if particle.coord[0] == particle.coord[1] == 0:
                 break
-            if i % 10000 == 0:
+            if i % 100 == 0:
                 line_x.append(particle.coord[0])
                 line_y.append(particle.coord[1])
     t2 = time()
@@ -225,5 +228,5 @@ def movement(planet, atmosphere, particles, N, dt):
     #             f.write(f"{lines_x[i][-1]} {lines_y[i][-1]}\n")
     # except:
     #     print("Error when writing to a file")
-
+    print(len(lines_x), len(lines_x[0]))
     Visualization.one_frame(planet, lines_x, lines_y, atmosphere, t2)
