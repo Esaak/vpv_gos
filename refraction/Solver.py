@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 import Planet
 import Particle
 import constants
@@ -14,13 +16,52 @@ def breaking_atmosphere(planet, dh, atmosphere_height, q, m, w0, w):
     coef0 = planet.Po / (constants.k * planet.T)
     coef = constants.m * planet.g / (constants.k * planet.T)
     coef1 = 4 * np.pi * q**2 / (3 * m) * 1/(w0**2 - w**2) * coef0
+
+    P_Venus = lambda x: pow(462 + 273 - 7.8 * x / 1000,
+                            7.3 * pow(10, -26) * 8.87 * 1000 / (7.8 * 1.38 * pow(10, -23))) * 92.3 * 10 ** 5 / (
+                                    1.75 * 10 ** 17)
+    #a = np.arange(10, 40000, 0.1)
+    T_Venus = lambda x: 462 + 273 - 7.8 * x / 1000
+
+    kb = 1.38 * pow(10, -23)
+    w0 = lambda x: kb * T_Venus(x) / (1.0545726 * 10 ** -34)
+
+    #w = 1 * 10 ** 13
+    #w = 7.5 * 1e13
+
+    N = lambda x: P_Venus(x) / (kb * T_Venus(x))
+
+    me = 9.1 * 10 ** -31
+    elec = 1.6 * 10 ** -19
+
+    k = lambda x: (4 * np.pi * N(x) * elec ** 2) / (3 * me * (w0(x) ** 2 - w ** 2))
+
+    #n = lambda x: ((2 * k(x) + 1) / (1 - k(x)))
+    arr = []
+    # for i in a:
+    #     c = n(i)
+    #     arr.append(np.sqrt(c))
+    x = []
+    n = []
     for i in range(int(atmosphere_height / dh) + 1):
         K = coef1 * np.exp( -coef * (dh * i))
-        n.append(np.sqrt((2 * K + 1)/(1 - K)))
-        if i%100 ==0:
-            print(n[i])
+        x.append(dh * i)
+        #n.append(np.sqrt((2 * K + 1)/(1 - K)) + (np.sqrt((2 * K + 1)/(1 - K)) - 1)*1e13)
+        n.append(np.sqrt(((2 * k(dh * i) + 1) / (1 - k(dh * i)))))
+        # if i%100 ==0:
+        #     for a in n[i]:
+        #         print("{:.15f}".format(a))
     #print(f"Показатель преломления при h = 0 м, при h = {atmosphere_height} м")
     #print(n[0], n[-1])
+    n1 = np.array(n)
+    n1 =n1.T
+
+    for i in range(len(n1)):
+        f, ax = plt.subplots()
+        ax.plot(x, n1[i])
+        ax.set_title(f'{w[i]}')
+        plt.savefig(f"pictures/n_x_{w[i]}.png")
+
     return Planet.Atmosphere(atmosphere_height, n, dh, w)
 
 
@@ -193,7 +234,7 @@ def movement(planet, atmosphere, particles, N, dt):
         for particle, line_x, line_y in zip(particles, lines_x, lines_y):
             one_step(particle, planet, atmosphere, dt)
             if particle.coord[0] == particle.coord[1] == 0:
-                break
+                continue
             if i % 100 == 0:
                 line_x.append(particle.coord[0])
                 line_y.append(particle.coord[1])

@@ -15,7 +15,7 @@ from Solver import *
 #
 # N = 10**5
 
-dt = constants.dt *10
+dt = constants.dt * 1e-1
 dh = constants.dh  # м
 eps = constants.eps
 particle_numbers = constants.particle_numbers
@@ -27,11 +27,11 @@ T = constants.T
 coef_reflection = constants.coef_reflection
 atmosphere_height = constants.atmosphere_height  # м
 q = constants.e
-m = constants.m
+m = constants.m_co2
 N = int(constants.N * 1e-2)
 w0 = constants.w0
 x_start = - (atmosphere_height + R) - 1
-w = np.array([w0*.7 ,w0*0.9, w0*1.1, w0*1.3, w0*1.5, w0*1.7], dtype=float) * 1e-10
+w = np.array([w0*2.1, w0*3.15, w0*4.1, w0*5.5, w0*6.7, w0*8.1], dtype=float) * 1e-1
 y_lim = constants.y_lim
 dy = (- y_lim[0] + y_lim[1]) / max(1, particle_numbers - 1)
 print(f"w0 = {w0}")

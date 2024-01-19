@@ -6,11 +6,11 @@ import numpy as np
 e = 1.6 * 1e-19 # Кл
 m = 8*1e-28 # kg
 
-
+m_co2 = 7.3*1e-26 # kg
 dt = 10**(-8) # c
-dh = 10  # м
+dh = 1  # м
 eps = 0.2
-particle_numbers = 10
+particle_numbers = 50
 #Planet constants
 R = 6 * 1e6 # м
 g = 9.8 * 0.84 # м/с^2
@@ -18,8 +18,12 @@ Po = 1e7 # Па
 T = 773 # K
 N = 10**8
 
-atmosphere_height = R  # м
-y_lim = np.array([0.465, 0.57], dtype=float) * atmosphere_height + R # м
+n = []
+
+R = 4 * 1e4
+#atmosphere_height = R  # м
+atmosphere_height = 4 * 1e4  # м
+y_lim = np.array([0.1, 0.7], dtype=float) * atmosphere_height + R # м
 
 #Physics constants
 c = 3*1e8 # м / с
